@@ -1,0 +1,46 @@
+const token = "6664714493:AAGSAN2konoeddPdytFkiBzX4ZpZ38lhUH4"; // токен бота
+
+function timer() { //функция времени
+//обьявляем переменные
+  let ss = SpreadsheetApp.getActiveSpreadsheet(); //получаем доступ к таблице
+  let ws = ss.getSheetByName("Лист1"); //получаем доступ к листу 1
+  let data = ws.getRange(2, 1, ws.getLastRow()-1, 9).getValues(); //получаем данные которые нужно обработать, 
+                                                                  //первая 2 означает, что мы берем данные начаная со второй стороки, 
+                                                                  //1 означает что берем начаная с первого столбца, 
+                                                                  //ws обрашаемся к листу1
+                                                                  //getLastRow до последней строки, -1 за вычетом первой, 9 по девятый столбец
+
+  let curentTime = new Date().getDate() + "." + (new Date().getMonth() + 1) + "." + new Date().getFullYear();//собираем текущее время
+  
+  for (i = 0; i < data.length; i++) {  //цикл с условием, пока i меньше длины массива
+//обьявляем переменные
+    let dataInfo = data[i];//обьявляем массив
+    let regionName = dataInfo[0];//имя региона из первого столбца(или нулевой элимент массива)
+    let datePush  = dataInfo[8].toString();//дата отправки, из девятого столбца (или 8 элимент массива)
+    let deeadLine  = dataInfo[5].toString();//дата окончания срока (дедлайн)
+    let clientIdChat = -1002084828741; //ID чата
+    if (datePush !== ""){//если дата отправки НЕ равен ни чему
+      datePush = dataInfo[8].getDate() + "." + (dataInfo[8].getMonth() + 1) + "." + dataInfo[8].getFullYear();//то собераем дату отправки 
+    }
+    if (datePush === curentTime){//если дата отправки равна текущей дате
+      if (clientIdChat !== ""){//и и ID чата не пустое
+        sendText(clientIdChat, "Регион: " + regionName + " Истекает дедлайн/срок действия: " + deeadLine + " .");//то используем функцию отправки с данными имя региона + дата окончания срока
+      }
+    }
+  }
+}
+
+// Стандартная функция по отправки сообщений  
+function sendText(chatId, text, keyBoard) {
+  let data = {
+    method: 'post',
+    payload: {
+      method: 'sendMessage',
+      chat_id: String(chatId),
+      text: text,
+      parse_mode: 'HTML',
+      reply_markup: JSON.stringify(keyBoard)
+    }
+  }
+  UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/', data);
+}

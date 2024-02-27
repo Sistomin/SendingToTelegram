@@ -1,0 +1,41 @@
+const token = "6664714493:AAGSAN2konoeddPdytFkiBzX4ZpZ38lhUH4";
+
+function timer() {
+  let ss = SpreadsheetApp.getActiveSpreadsheet();
+  //let ss = SpreadsheetApp.openById("1pa0fgEGmCSwL1x41JDWeUR8YBWw1x_uZGDgIi7kVBXY")
+  let ws = ss.getSheetByName("Лист1");
+  let data = ws.getRange(2, 1, ws.getLastRow()-1, 9).getValues();
+  let curentTime = new Date().getDate() + "." + (new Date().getMonth() + 1) + "." + new Date().getFullYear();
+  
+  for (i = 0; i < data.length; i++) {
+    let dataInfo = data[i];
+    let regionName = dataInfo[0];
+    let datePush  = dataInfo[8].toString();
+    let deeadLine  = dataInfo[5].toString();
+    let clientIdChat = -1002084828741;
+    if (datePush !== ""){
+      datePush = dataInfo[8].getDate() + "." + (dataInfo[8].getMonth() + 1) + "." + dataInfo[8].getFullYear();
+      //console.log(clientIdChat)
+    }
+    if (datePush === curentTime){
+      if (clientIdChat !== ""){
+        sendText(clientIdChat, "Регион: " + regionName + " Истекает дедлайн/срок действия: " + deeadLine + " .");
+      }
+    }
+  }
+//console.log(deeadLine)
+}
+ 
+function sendText(chatId, text, keyBoard) {
+  let data = {
+    method: 'post',
+    payload: {
+      method: 'sendMessage',
+      chat_id: String(chatId),
+      text: text,
+      parse_mode: 'HTML',
+      reply_markup: JSON.stringify(keyBoard)
+    }
+  }
+  UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/', data);
+}
